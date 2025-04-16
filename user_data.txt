@@ -1,0 +1,45 @@
+[
+    {
+        "user_id": "1",
+        "meal_name": "Lunch",
+        "quantity": 1.0,
+        "serving_unit": "plate",
+        "nutritional_values": {
+            "Calories": 600.0,
+            "ProteinContent": 35.0
+        },
+        "entry_date": "2025-04-15",
+        "type": "diet_log"
+    },
+    {
+        "user_id": "2",
+        "meal_name": "Lunch",
+        "quantity": 1.0,
+        "serving_unit": "plate",
+        "nutritional_values": {
+            "Calories": 600.0,
+            "ProteinContent": 35.0
+        },
+        "entry_date": "2025-04-15",
+        "type": "diet_log"
+    },
+    {
+        "user_id": "1",
+        "meal_name": "Breakfast",
+        "quantity": 20.0,
+        "serving_unit": "fl oz",
+        "nutritional_values": {
+            "Calories": 250.0,
+            "ProteinContent": 5.0,
+            "FatContent": 3.0,
+            "SaturatedFatContent": 1.5,
+            "CholesterolContent": 0.0,
+            "SodiumContent": 50.0,
+            "CarbohydrateContent": 52.0,
+            "FiberContent": 4.0,
+            "SugarContent": 45.0
+        },
+        "entry_date": "2025-04-16",
+        "type": "diet_log"
+    }
+]

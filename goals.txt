@@ -1,0 +1,15 @@
+[
+    {
+        "user_id": "1",
+        "Calories": 1000.0,
+        "FatContent": 40.0,
+        "SaturatedFatContent": 10.0,
+        "CholesterolContent": 250.0,
+        "SodiumContent": 1000.0,
+        "CarbohydrateContent": 300.0,
+        "FiberContent": 40.0,
+        "SugarContent": 35.0,
+        "ProteinContent": 35.0,
+        "type": "goal"
+    }
+]
