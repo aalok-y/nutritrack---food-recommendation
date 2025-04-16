@@ -1,43 +1,40 @@
 [
     {
         "user_id": "1",
-        "meal_name": "Lunch",
+        "meal_name": "Breakfast",
+        "food_name": "omelette",
         "quantity": 1.0,
-        "serving_unit": "plate",
+        "serving_unit": "3-egg omelet",
         "nutritional_values": {
-            "Calories": 600.0,
-            "ProteinContent": 35.0
+            "Calories": 323.47,
+            "ProteinContent": 21.13,
+            "FatContent": 25.32,
+            "SaturatedFatContent": 5.86,
+            "CholesterolContent": 624.96,
+            "SodiumContent": 533.35,
+            "CarbohydrateContent": 1.39,
+            "FiberContent": 0.07,
+            "SugarContent": 0.62
         },
-        "entry_date": "2025-04-15",
-        "type": "diet_log"
-    },
-    {
-        "user_id": "2",
-        "meal_name": "Lunch",
-        "quantity": 1.0,
-        "serving_unit": "plate",
-        "nutritional_values": {
-            "Calories": 600.0,
-            "ProteinContent": 35.0
-        },
-        "entry_date": "2025-04-15",
+        "entry_date": "2025-04-16",
         "type": "diet_log"
     },
     {
         "user_id": "1",
         "meal_name": "Breakfast",
-        "quantity": 20.0,
-        "serving_unit": "fl oz",
+        "food_name": "pizza",
+        "quantity": 1.0,
+        "serving_unit": "slice",
         "nutritional_values": {
-            "Calories": 250.0,
-            "ProteinContent": 5.0,
-            "FatContent": 3.0,
-            "SaturatedFatContent": 1.5,
-            "CholesterolContent": 0.0,
-            "SodiumContent": 50.0,
-            "CarbohydrateContent": 52.0,
-            "FiberContent": 4.0,
-            "SugarContent": 45.0
+            "Calories": 284.62,
+            "ProteinContent": 12.19,
+            "FatContent": 10.37,
+            "SaturatedFatContent": 4.78,
+            "CholesterolContent": 18.19,
+            "SodiumContent": 639.86,
+            "CarbohydrateContent": 35.66,
+            "FiberContent": 2.46,
+            "SugarContent": 3.83
         },
         "entry_date": "2025-04-16",
         "type": "diet_log"

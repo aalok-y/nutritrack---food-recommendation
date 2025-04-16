@@ -260,6 +260,7 @@ class MealRecommendationsResponse(BaseModel):
 class DietLogEntry(BaseModel):
     user_id: str = Field(..., example="user123")
     meal_name: str = Field(..., example="Lunch")
+    food_name: str = Field(..., example="Lunch")
     quantity: float = Field(..., example=1.0, description="Quantity of the meal")
     serving_unit: str = Field(..., example="plate")
     nutritional_values: Dict[str, float] = Field(..., example={"Calories": 600, "ProteinContent": 35})
