@@ -294,6 +294,75 @@ weight_loss_mapping = {
 # ====================================================
 # Endpoint 1: Feature 1 - Diet Recommendation Based on Health Parameters
 # ====================================================
+# @app.post("/diet_recommendation", response_model=PersonHealthResponse, summary="Diet Recommendation Based on Health Parameters")
+# def diet_recommendation(input_data: DietRecommendationInput):
+#     meals_perc = get_meals_calories_perc(input_data.meals_per_day)
+#     # Get weight loss factor from plan mapping
+#     weight_loss_factor = weight_loss_mapping.get(input_data.weight_loss_plan, 1.0)
+#     person = Person(input_data.age, input_data.height, input_data.weight,
+#                     input_data.gender, input_data.activity, meals_perc, weight_loss_factor)
+#     bmi = person.calculate_bmi()
+#     bmi_string, bmi_category, color = person.display_result()
+#     bmr = person.calculate_bmr()
+#     maintenance_cal = person.calories_calculator()
+#     target_cal = maintenance_cal * weight_loss_factor
+#     allergic_filter = input_data.allergic_filter
+#     ingredient_filter = input_data.ingredient_filter
+
+#     user_nutrient_deficit = get_remaining_nutrition("1");
+#     user_nutrient_deficit = user_nutrient_deficit['remaining_nutrition']
+#     print("user_nutrient_deficit",user_nutrient_deficit)
+#     print("allergic_filter",allergic_filter)
+#     print("ingredient_filter",ingredient_filter)
+#     print("ingredient_filter_default",ingredient_filter_default)
+#     print("allergic_filter_default",allergic_filter_default)
+#     # Generate meal recommendations if dataset is available.
+#     meal_recs = {}
+#     for meal, perc in meals_perc.items():
+#         meal_calories = target_cal * perc
+#         test_input = manual_input_df.copy()
+#         test_input.iloc[0, 0] = meal_calories   # Update the Calories value
+#         test_input_array = test_input.to_numpy()
+        
+#         try:
+#             recs = recommend(
+#                 dataset,
+#                 test_input_array,
+#                 max_list,
+#                 ingredient_filter=ingredient_filter,
+#                 allergic_filter=allergic_filter,
+#                 user_data=user_nutrient_deficit,
+#                 params=default_params,
+#                 adjustment_factor=0.1
+#             )
+            
+#             # Convert recommendations to list of dictionaries if necessary
+#             if isinstance(recs, pd.DataFrame):
+#                 recs_list = recs.to_dict(orient="records")
+#             else:
+#                 recs_list = recs
+                
+#             # Handle empty recommendations
+#             if not recs_list:
+#                 recs_list = []
+                
+#             meal_recs[meal] = recs_list
+#         except Exception as e:
+#             # Log the error and return empty recommendations for this meal
+#             print(f"Error generating recommendations for {meal}: {str(e)}")
+#             meal_recs[meal] = []
+    
+#     return PersonHealthResponse(
+#         bmi=bmi,
+#         bmi_string=bmi_string,
+#         bmi_category=bmi_category,
+#         color=color,
+#         bmr=bmr,
+#         maintenance_calories=maintenance_cal,
+#         target_calories=round(target_cal),
+#         meal_recommendations=meal_recs
+#     )
+
 @app.post("/diet_recommendation", response_model=PersonHealthResponse, summary="Diet Recommendation Based on Health Parameters")
 def diet_recommendation(input_data: DietRecommendationInput):
     meals_perc = get_meals_calories_perc(input_data.meals_per_day)
@@ -309,38 +378,73 @@ def diet_recommendation(input_data: DietRecommendationInput):
     allergic_filter = input_data.allergic_filter
     ingredient_filter = input_data.ingredient_filter
 
-    user_nutrient_deficit = get_remaining_nutrition("1");
-    user_nutrient_deficit = user_nutrient_deficit['remaining_nutrition']
-    print("user_nutrient_deficit",user_nutrient_deficit)
-    print("allergic_filter",allergic_filter)
-    print("ingredient_filter",ingredient_filter)
-    print("ingredient_filter_default",ingredient_filter_default)
-    print("allergic_filter_default",allergic_filter_default)
+    # Get user's remaining nutritional needs
+    try:
+        user_nutrient_deficit = get_remaining_nutrition("1")
+        user_nutrient_deficit = user_nutrient_deficit.get('remaining_nutrition', {})
+    except Exception as e:
+        print(f"Error retrieving user nutrition data: {str(e)}")
+        user_nutrient_deficit = {}
+
     # Generate meal recommendations if dataset is available.
     meal_recs = {}
+    # Keep track of already recommended recipes to avoid duplicates
+    recommended_recipes = set()
+    
+    # Define meal-specific nutritional emphasis
+    meal_nutrition_emphasis = {
+        'breakfast': {'ProteinContent': 0.8, 'FiberContent': 1.2, 'SugarContent': 0.7},
+        'morning snack': {'ProteinContent': 1.0, 'FiberContent': 1.0, 'SugarContent': 0.8},
+        'lunch': {'ProteinContent': 1.5, 'FiberContent': 1.2, 'CarbohydrateContent': 1.3},
+        'afternoon snack': {'ProteinContent': 1.2, 'FiberContent': 1.0, 'SodiumContent': 0.7},
+        'dinner': {'ProteinContent': 1.3, 'FatContent': 0.8, 'CholesterolContent': 0.7}
+    }
+
     for meal, perc in meals_perc.items():
         meal_calories = target_cal * perc
         test_input = manual_input_df.copy()
-        test_input.iloc[0, 0] = meal_calories   # Update the Calories value
+        test_input.iloc[0, 0] = meal_calories  # Update the Calories value
+        
+        # Apply meal-specific nutritional emphasis
+        meal_emphasis = meal_nutrition_emphasis.get(meal, {})
+        user_nutrition_for_meal = user_nutrient_deficit.copy()
+        
+        # Modify user nutrition data with meal-specific emphasis
+        for nutrient, factor in meal_emphasis.items():
+            if nutrient in user_nutrition_for_meal:
+                user_nutrition_for_meal[nutrient] = user_nutrition_for_meal[nutrient] * factor
+        
         test_input_array = test_input.to_numpy()
         
         try:
+            # Get more recommendations than needed to filter out duplicates
+            params = {'return_distance': False, 'n_neighbors': 15}
             recs = recommend(
                 dataset,
                 test_input_array,
                 max_list,
                 ingredient_filter=ingredient_filter,
                 allergic_filter=allergic_filter,
-                user_data=user_nutrient_deficit,
-                params=default_params,
-                adjustment_factor=0.1
+                user_data=user_nutrition_for_meal,
+                params=params,
+                adjustment_factor=0.15  # Increased adjustment factor for more variation
             )
             
             # Convert recommendations to list of dictionaries if necessary
             if isinstance(recs, pd.DataFrame):
-                recs_list = recs.to_dict(orient="records")
+                # Filter out recipes that were already recommended for other meals
+                new_recs = []
+                for _, row in recs.iterrows():
+                    recipe_id = row.get('RecipeId')
+                    if recipe_id not in recommended_recipes:
+                        new_recs.append(row.to_dict())
+                        recommended_recipes.add(recipe_id)
+                        # Limit to 5 recommendations per meal
+                        if len(new_recs) >= 5:
+                            break
+                recs_list = new_recs
             else:
-                recs_list = recs
+                recs_list = []
                 
             # Handle empty recommendations
             if not recs_list:
